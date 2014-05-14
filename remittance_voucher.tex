@@ -1,0 +1,293 @@
+\documentclass{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage{tabularx}
+\usepackage[a4paper,top=2cm,bottom=1.5cm,left=2.2cm,right=1.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage[absolute]{textpos}
+\usepackage{wallpaper}
+\usepackage{microtype}
+\setlength\parindent{0pt}%Festlegen des Absatzeinzuges
+\ULCornerWallPaper{1}{../templates/Briefkopf.pdf}
+%OCR Encoding
+\usepackage{ocr}
+\usepackage[T1]{fontenc}
+
+
+%Gruppierung der Referenznummer in 5er Blöcke
+\usepackage{xstring}
+
+\makeatletter
+% Low level macro
+% #1 String to separate in groups of five
+% #2 Character to insert as separator
+\def\@separatefivedigits#1#2{%
+  \StrLen{#1}[\length]%
+  \ifnum\length<5\relax#1\else%
+     \bgroup
+     \StrRight{#1}{5}[\lowerfive]%
+     \StrGobbleRight{#1}{5}[\remaining]%
+     \@separatefivedigits{\remaining}{#2}#2\lowerfive%
+     \egroup
+  \fi}
+
+% User macro
+% #1 String to separate in groups of five
+% #2 Character to insert as separator
+\def\formatnumber#1#2{\StrDel{#1}{ }[\aux]%
+\@separatefivedigits{\aux}{#2}%
+}
+
+% Convenience macro for the case in which the separator is the space
+\def\formatnumberwithspaces#1{\formatnumber{#1}{ }}
+\makeatother
+
+\begin{document}
+
+\pagestyle{myheadings}
+\thispagestyle{empty}
+
+\fontfamily{cmss}\fontsize{10pt}{12pt}\selectfont
+
+\vspace*{1.8cm}
+
+\parbox[t]{.5\textwidth}{
+\textbf{}
+\vspace{0.3cm}
+
+\textbf{<%name%>}
+
+<%address1%>
+
+<%address2%>
+
+<%zipcode%> <%city%>
+
+<%if state%>
+<%state%>
+<%end state%>
+
+<%country%>
+
+\vspace{0.3cm}
+
+<%if contact%>
+<%contact%>
+\vspace{0.2cm}
+<%end contact%>
+
+<%if customerphone%>
+Tel: <%customerphone%>
+<%end customerphone%>
+
+<%if customerfax%>
+Fax: <%customerfax%>
+<%end customerfax%>
+
+<%email%>
+}
+
+\hfill
+
+\vspace{1.5cm}
+
+\textbf{R E C H N U N G}
+\hfill
+
+\vspace{1cm}
+
+\begin{tabularx}{\textwidth}{*{4}{|X}|} \hline
+  \textbf{Rechnungs.-Nr.}  & \textbf{Kunden.-Nr.} & \textbf{Datum} & \textbf{zahlbar bis} \\ [0.5em]
+  \hline
+  <%invnumber%> & <%customernumber%> & <%invdate%> & <%duedate%> \\
+  \hline
+\end{tabularx}
+
+\vspace{0.5cm}
+
+\begin{tabularx}{\textwidth}{@{}rlXlrlr@{}}
+  \textbf{Pos.} & \textbf{Art.-Nr.} & \textbf{Beschreibung} & \textbf{Menge}  & \textbf{Preis} & \textbf{Rabatt \%} & \textbf{Betrag} \\ [0.5em]
+<%foreach number%>
+  <%runningnumber%> & <%number%> & <%description%> &
+  <%qty%> & <%sellprice%> & <%discountrate%> & <%linetotal%> \\
+<%end number%>
+\end{tabularx}
+
+\parbox{\textwidth}{
+\rule{\textwidth}{2pt}
+
+\vspace{0.2cm}
+
+\hfill
+\begin{tabularx}{7cm}{Xr@{\hspace{1cm}}r@{}}
+  & Subtotal & <%subtotal%> \\
+<%foreach tax%>
+  & <%taxdescription%> & <%tax%> \\
+<%end tax%>
+<%if paid%>
+  & Bezahlt & - <%paid%> \\
+<%end paid%>
+  \hline
+
+<%if total%>
+& \textbf{Total} & \textbf{<%total%>}
+<%end total%>
+
+\end{tabularx}
+
+\vspace{0.3cm}
+
+
+\hfill
+Alle Preise in \textbf{<%currency%>}.
+
+\vspace{0.5cm}
+
+<%notes%>
+}
+
+\fontsize{9}{0}
+\selectfont
+
+% Bankadresse Links
+
+\begin{textblock*}{55mm}(4.5mm,197.5mm)
+
+<%bankname%>
+
+<%bankaddress1%>
+
+<%bankzipcode%> <%bankcity%>
+
+\end{textblock*}
+
+% Bankadresse Rechts
+
+\begin{textblock*}{55mm}(64mm,197.5mm)
+
+<%bankname%> 
+
+<%bankaddress1%>
+
+<%bankzipcode%> <%bankcity%>
+
+\end{textblock*}
+
+% Firmenadresse Links
+
+\begin{textblock*}{55mm}(4.5mm,211mm)
+
+<%company%>
+
+<%address%>
+
+\end{textblock*}
+
+% Firmenadresse Rechts
+
+\begin{textblock*}{55mm}(64mm,211mm)
+
+<%company%>
+
+<%address%>
+
+\end{textblock*}
+
+% Codierzeile und Adresse des Einzahler auf der Linken Seite
+
+\begin{textblock*}{55mm}(4.5mm,250mm)
+\formatnumberwithspaces{<%dcn%>}
+
+<%name%>
+
+<%address1%>
+
+<%address2%>
+
+<%zipcode%> <%city%>
+
+<%country%>
+\end{textblock*}
+
+% Adresse des Einzahlers auf der Rechten Seite
+
+\begin{textblock*}{55mm}(126mm,237mm)
+<%name%>
+
+<%address1%>
+
+<%address2%>
+
+<%zipcode%> <%city%>
+
+<%country%>
+\end{textblock*}
+
+% Schriftdefinitionen für den OCR Teil
+\fontsize{10}{0}
+\selectfont
+
+% Kontonummer Links
+
+\begin{textblock*}{25mm}(30mm,232.0mm)
+
+\textbf{\ocr{<%membernumber%>}}
+
+\end{textblock*}
+
+% Kontonummer Rechts
+
+\begin{textblock*}{25mm}(90mm,232.0mm)
+
+\textbf{\ocr{<%membernumber%>}}
+
+\end{textblock*}
+
+% Integerbetrag Links
+
+\begin{textblock*}{39.5mm}(1.5mm,240.8mm)
+
+\textls[520]{\textbf{\ocr{\hfill <%integer_out_amount%>}}}
+
+\end{textblock*}
+
+% Dezimalbetrag Links
+
+\begin{textblock*}{10mm}(49.3mm,240.8mm)
+
+\textls[520]{\textbf{\ocr{<%decimal%>}}}
+
+\end{textblock*}
+
+% Integerbetrag Rechts
+
+\begin{textblock*}{39.5mm}(62.5mm,240.8mm)
+
+\textls[520]{\textbf{\ocr{\hfill <%integer_out_amount%>}}}
+
+\end{textblock*}
+
+% Dezimalbetrag Rechts
+
+\begin{textblock*}{10mm}(110.5mm,240.8mm)
+
+\textls[520]{\textbf{\ocr{<%decimal%>}}}
+
+\end{textblock*}
+
+% Referenznummer
+
+\begin{textblock*}{84mm}(124.5mm,224.0mm)
+
+\ocr{\textbf{\hfill \formatnumberwithspaces{<%dcn%>}}}
+
+\end{textblock*}
+
+% Codierzeile
+
+\begin{textblock*}{141mm}(62.5mm,274.0mm)
+
+\ocr{\textbf{\hfill <%rvc%>}}
+
+\end{textblock*}
+
+\end{document}
